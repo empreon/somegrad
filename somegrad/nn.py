@@ -3,12 +3,21 @@ from somegrad import Tensor
 
 class Module:
 
+    def __init__(self):
+        self.training = True
+
     def zero_grad(self):
         for p in self.parameters():
             p.grad = np.zeros_like(p.data)
 
     def parameters(self):
         return []
+
+    def train(self):
+        self.training = True
+
+    def eval(self):
+        self.training = False
 
 
 class Linear(Module):
@@ -30,12 +39,14 @@ class Linear(Module):
 class BatchNorm1d(Module):
 
     def __init__(self, dim, eps=1e-5, momentum=0.1):
+        super().__init__()
         self.eps = eps
         self.momentum = momentum
-        self.training = True
+
         # parameters
         self.gamma = Tensor(np.ones(dim))
         self.beta = Tensor(np.zeros(dim))
+
         # buffers
         self.running_mean = Tensor(np.zeros(dim))
         self.running_var = Tensor(np.ones(dim)) 
