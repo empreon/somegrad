@@ -261,7 +261,6 @@ class Tensor:
     def one_hot(self, num_classes: int = -1) -> 'Tensor':
         """
         One-hot encode the tensor.
-        Useful for converting categorical integer labels into one-hot vectors.
         """
         from . import functional as F
         return F.one_hot(self, num_classes=num_classes)
@@ -269,7 +268,6 @@ class Tensor:
     def cross_entropy(self, y: Union['Tensor', np.ndarray]) -> 'Tensor':
         """
         Computes the Cross Entropy Loss.
-        Assumes 'self' contains logits (unnormalized log-probabilities).
         """
         from . import functional as F
         return F.cross_entropy(self, y)
