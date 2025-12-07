@@ -9,9 +9,11 @@ class SGD:
     def step(self):
         """Update parameters according to gradient"""
         for p in self.params:
-            p.data -= self.lr * p.grad
+            if p.grad is None:
+                continue
+            p.buffer.data -= self.lr * p.grad
 
     def zero_grad(self):
         """Zeor the gradients"""
         for p in self.params:
-            p.grad = np.zeros_like(p.data)
+            p.grad = None

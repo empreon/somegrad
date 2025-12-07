@@ -1,76 +1,69 @@
 import numpy as np
 from typing import Union, Tuple, Optional, List
-from .engine import Tensor, unbroadcast
+from .tensor import Tensor
+from .utils import unbroadcast
 
 def exp(input: Tensor) -> Tensor:
-    """
-    Element-wise exponential function.
-    """
-    out = Tensor(np.exp(input.data), (input,), 'exp')
+    out_buffer = input.buffer.exp()
+    out = Tensor(out_buffer, device=input.device, _children=(input,), _op='exp')
 
     def _backward() -> None:
+        if input.grad is None: input.grad = np.zeros(input.shape, dtype=np.float32)
         # (e^x)' = e^x
         input.grad += unbroadcast(out.data * out.grad, input.data.shape)
     out._backward = _backward
     return out
 
 def log(input: Tensor) -> Tensor:
-    """
-    Element-wise natural logarithm.
-    """
-    out = Tensor(np.log(input.data), (input,), 'log')
+    out_buffer = input.buffer.log()
+    out = Tensor(out_buffer, device=input.device, _children=(input,), _op='log')
     
     def _backward() -> None:
+        if input.grad is None: input.grad = np.zeros(input.shape, dtype=np.float32)
         # ln(x)' = 1/x
         input.grad += unbroadcast((1 / input.data) * out.grad, input.data.shape)
     out._backward = _backward
     return out
 
 def abs(input: Tensor) -> Tensor:
-    """
-    Element-wise absolute value function.
-    """
-    out = Tensor(np.abs(input.data), (input,), 'abs')
+    out_buffer = abs(input.buffer)
+    out = Tensor(out_buffer, device=input.device, _children=(input,), _op='abs')
 
     def _backward() -> None:
+        if input.grad is None: input.grad = np.zeros(input.shape, dtype=np.float32)
         # |x|' = sign(x)
         input.grad += unbroadcast(np.sign(input.data) * out.grad, input.data.shape)
     out._backward = _backward
     return out
 
 def relu(input: Tensor) -> Tensor:
-    """
-    Rectified Linear Unit activation function.
-    f(x) = max(0, x)
-    """
-    out = Tensor(np.maximum(0, input.data), (input,), 'ReLU')
+    out_buffer = input.buffer.relu()
+    out = Tensor(out_buffer, device=input.device, _children=(input,), _op='ReLU')
 
     def _backward() -> None:
+        if input.grad is None: input.grad = np.zeros(input.shape, dtype=np.float32)
         # Gradient is 1 where data > 0, else 0
         input.grad += unbroadcast((out.data > 0) * out.grad, input.data.shape)
     out._backward = _backward
     return out
 
 def tanh(input: Tensor) -> Tensor:
-    """
-    Hyperbolic tangent activation function.
-    """
-    t = (np.exp(2*input.data) - 1)/(np.exp(2*input.data) + 1)
-    out = Tensor(t, (input,), 'tanh')
+    out_buffer = input.buffer.tanh()
+    out = Tensor(out_buffer, device=input.device, _children=(input,), _op='tanh')
 
     def _backward() -> None:
+        if input.grad is None: input.grad = np.zeros(input.shape, dtype=np.float32)
         # (tanh(x))' = 1 - tanh(x)^2
-        input.grad += unbroadcast((1 - t**2) * out.grad, input.data.shape)
+        input.grad += unbroadcast((1 - out.data**2) * out.grad, input.data.shape)
     out._backward = _backward
     return out
 
 def sum(input: Tensor, axis: Optional[Union[int, Tuple[int, ...]]] = None, keepdims: bool = False) -> Tensor:
-    """
-    Sum of array elements over a given axis.
-    """
-    out = Tensor(input.data.sum(axis=axis, keepdims=keepdims), (input,), 'sum')
+    out_buffer = input.data.sum(axis=axis, keepdims=keepdims)
+    out = Tensor(out_buffer, device=input.device, _children=(input,), _op='sum')
 
     def _backward() -> None:
+        if input.grad is None: input.grad = np.zeros(input.shape, dtype=np.float32)
         grad = out.grad
         
         # If dimensions were collapsed (keepdims=False), restore them for broadcasting
@@ -90,17 +83,15 @@ def sum(input: Tensor, axis: Optional[Union[int, Tuple[int, ...]]] = None, keepd
                 grad = np.expand_dims(grad, a)
 
         input.grad += grad
-        
     out._backward = _backward
     return out
 
 def mean(input: Tensor, axis: Optional[Union[int, Tuple[int, ...]]] = None, keepdims: bool = False) -> Tensor:
-    """
-    Compute the arithmetic mean along the specified axis.
-    """
-    out = Tensor(input.data.mean(axis=axis, keepdims=keepdims), (input,), 'mean')
+    out_buffer = input.data.mean(axis=axis, keepdims=keepdims)
+    out = Tensor(out_buffer, device=input.device, _children=(input,), _op='mean')
 
     def _backward() -> None:
+        if input.grad is None: input.grad = np.zeros(input.shape, dtype=np.float32)
         if axis is None:
             N = input.data.size
         else:
@@ -123,28 +114,18 @@ def mean(input: Tensor, axis: Optional[Union[int, Tuple[int, ...]]] = None, keep
                 grad = np.expand_dims(grad, a)
         
         input.grad += grad
-        
     out._backward = _backward
     return out
 
 def var(input: Tensor, axis: Optional[Union[int, Tuple[int, ...]]] = None, keepdims: bool = False) -> Tensor:
-    """
-    Compute the variance along the specified axis.
-    """
     # var = mean((x - mean(x))**2)
     m = mean(input, axis=axis, keepdims=True)
     return mean((input - m)**2, axis=axis, keepdims=keepdims)
 
 def std(input: Tensor, axis: Optional[Union[int, Tuple[int, ...]]] = None, keepdims: bool = False) -> Tensor:
-    """
-    Compute the standard deviation along the specified axis.
-    """
     return var(input, axis=axis, keepdims=keepdims) ** 0.5
 
 def one_hot(input: Tensor, num_classes: int = -1) -> Tensor:
-    """
-    One-hot encode the tensor.
-    """
     # input.data shape: (N, 2) or similar
     N = input.data.shape[0]
     if input.data.ndim == 1:
@@ -159,13 +140,9 @@ def one_hot(input: Tensor, num_classes: int = -1) -> Tensor:
         for i in range(input_len):
             out[np.arange(N), input.data[:, i] + (i * num_classes)] = 1
         
-    return Tensor(out)
+    return Tensor(out, device=input.device)
 
 def cross_entropy(input: Tensor, target: Union[Tensor, np.ndarray]) -> Tensor:
-    """
-    Computes the Cross Entropy Loss.
-    Assumes 'input' contains logits (unnormalized log-probabilities).
-    """
     # Forward Pass
     # For numerical stability subtract maximum value from each row
     max_vals = input.data.max(axis=1, keepdims=True)
@@ -185,51 +162,43 @@ def cross_entropy(input: Tensor, target: Union[Tensor, np.ndarray]) -> Tensor:
     loss_val = -np.log(correct_confidences).mean()
     
     # Wrapping
-    out = Tensor(loss_val, (input,), 'CrossEntropy')
+    out = Tensor(loss_val, device=input.device, _children=(input,), _op='CrossEntropy')
     
     # Backward Pass
     def _backward() -> None:
+        if input.grad is None: input.grad = np.zeros(input.shape, dtype=np.float32)
         d_logits = probs.copy()
         d_logits[np.arange(N), y_vals] -= 1
         d_logits /= N
         
         input.grad += d_logits * out.grad
-        
     out._backward = _backward
     return out
 
 def mse_loss(input: Tensor, target: Union[Tensor, np.ndarray]) -> Tensor:
-    """
-    Computes the Mean Squared Error Loss.
-    """
-    target = target if isinstance(target, Tensor) else Tensor(target)
+    target = target if isinstance(target, Tensor) else Tensor(target, device=input.device)
     # We use the composed operations so gradients propagate naturally
-    return ((input - target) ** 2).mean()
+    return mean((input - target) ** 2)
 
 def reshape(input: Tensor, *shape) -> Tensor:
-    """
-    Reshape the tensor.
-    """
     # Handle both reshape(2, 3) and reshape((2, 3))
     if len(shape) == 1 and isinstance(shape[0], (tuple, list)):
         shape = shape[0]
     
-    out = Tensor(input.data.reshape(shape), (input,), 'reshape')
+    out = Tensor(input.data.reshape(shape), device=input.device, _children=(input,), _op='reshape')
     
     def _backward() -> None:
+        if input.grad is None: input.grad = np.zeros(input.shape, dtype=np.float32)
         input.grad += out.grad.reshape(input.data.shape)
     out._backward = _backward
     return out
 
 def histogram(input: Tensor, bins: Union[int, List[float], np.ndarray] = 10, range: Optional[Tuple[float, float]] = None, density: bool = False) -> Tuple[Tensor, Tensor]:
-    """
-    Computes the histogram of a tensor.
-    """
+
     # detach data for numpy operation
     hist_np, bin_edges_np = np.histogram(input.data, bins=bins, range=range, density=density)
     
     # Wrap results in Tensors.    
-    hist = Tensor(hist_np)
-    bin_edges = Tensor(bin_edges_np)
-    
+    hist = Tensor(hist_np, device=input.device)
+    bin_edges = Tensor(bin_edges_np, device=input.device)
     return hist, bin_edges

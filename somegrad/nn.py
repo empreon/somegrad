@@ -1,5 +1,6 @@
 import numpy as np
 from somegrad import Tensor
+import somegrad.functional as F
 
 class Module:
 
@@ -54,8 +55,8 @@ class BatchNorm1d(Module):
     def __call__(self, x):
         # calculate the forward pass
         if self.training:
-            xmean = x.mean(0, keepdims=True) # batch mean
-            xvar = x.var(0, keepdims=True) # batch variance
+            xmean = F.mean(x, 0, keepdims=True) # batch mean
+            xvar = F.var(x, 0, keepdims=True) # batch variance
         else:
             xmean = self.running_mean
             xvar = self.running_var
@@ -75,7 +76,7 @@ class BatchNorm1d(Module):
 class Tanh:
 
     def __call__(self, x):
-        self.out = x.tanh()
+        self.out = F.tanh(x)
         return self.out
 
     def parameters(self):
