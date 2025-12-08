@@ -73,19 +73,25 @@ class CPUBuffer(Buffer):
         return other ** self.data
     
     def __eq__(self, other) -> 'CPUBuffer':
-        return self.data == other
+        other_data = other.data if isinstance(other, CPUBuffer) else other
+        return self.data == other_data
 
     def __ne__(self, other) -> 'CPUBuffer':
-        return self.data != other
+        other_data = other.data if isinstance(other, CPUBuffer) else other
+        return self.data != other_data
     
     def __lt__(self, other) -> 'CPUBuffer':
-        return self.data < other
+        other_data = other.data if isinstance(other, CPUBuffer) else other
+        return self.data < other_data
     
     def __gt__(self, other) -> 'CPUBuffer':
-        return self.data > other
+        other_data = other.data if isinstance(other, CPUBuffer) else other
+        return self.data > other_data
     
     def __le__(self, other) -> 'CPUBuffer':
-        return self.data <= other
+        other_data = other.data if isinstance(other, CPUBuffer) else other
+        return self.data <= other_data
     
     def __ge__(self, other) -> 'CPUBuffer':
-        return self.data >= other
+        other_data = other.data if isinstance(other, CPUBuffer) else other
+        return self.data >= other_data
