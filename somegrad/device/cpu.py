@@ -14,9 +14,6 @@ class CPUBuffer(Buffer):
     def shape(self) -> Tuple[int, ...]:
         return self.data.shape
 
-    def numpy(self) -> np.ndarray:
-        return self.data
-
     def __add__(self, other) -> 'CPUBuffer':
         other_data = other.data if isinstance(other, CPUBuffer) else other
         return CPUBuffer(self.data + other_data)
