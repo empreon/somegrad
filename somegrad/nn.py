@@ -9,7 +9,7 @@ class Module:
 
     def zero_grad(self):
         for p in self.parameters():
-            p.grad = np.zeros_like(p.data)
+            p.grad = None
 
     def parameters(self):
         return []
