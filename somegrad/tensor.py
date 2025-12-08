@@ -22,7 +22,11 @@ class Tensor:
 
     @property
     def data(self) -> np.ndarray:
-        return self.buffer.numpy()
+        return self.buffer.data
+
+    @data.setter
+    def data(self, new_data):
+        self.buffer.data = new_data
 
     @property
     def shape(self) -> Tuple[int, ...]:
@@ -65,8 +69,8 @@ class Tensor:
             if self.grad is None: self.grad = np.zeros(self.shape, dtype=np.float32)
             if other.grad is None: other.grad = np.zeros(other.shape, dtype=np.float32)
 
-            self.grad += unbroadcast(out.grad @ other.data.T, self.shape)
-            other.grad += unbroadcast(self.data.T @ out.grad, other.shape)
+            self.grad += unbroadcast(out.grad @ other.data.transpose(-1, -2), self.shape)
+            other.grad += unbroadcast(self.data.transpose(-1, -2) @ out.grad, other.shape)
         out._backward = _backward
         return out
     
