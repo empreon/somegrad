@@ -7,13 +7,11 @@ class SGD:
         self.lr = lr
 
     def step(self):
-        """Update parameters according to gradient"""
         for p in self.params:
             if p.grad is None:
                 continue
             p.buffer.data -= self.lr * p.grad
 
     def zero_grad(self):
-        """Zeor the gradients"""
         for p in self.params:
             p.grad = None

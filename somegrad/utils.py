@@ -2,10 +2,6 @@ import numpy as np
 from typing import Tuple
 
 def unbroadcast(grad: np.ndarray, shape: Tuple[int, ...]) -> np.ndarray:
-    """
-    Handles NumPy broadcasting issues during backpropagation.
-    If the gradient shape doesn't match the original data shape, sum out the broadcasted dimensions.
-    """
     if grad.shape != shape:
         # Normal broadcasting: Handle extra leading dimensions
         # e.g., gradient has shape (3, 4), original was (4,) -> sum over axis 0
