@@ -25,6 +25,18 @@ def log(input: Tensor) -> Tensor:
     out._backward = _backward
     return out
 
+def log10(input: Tensor) -> Tensor:
+    out_buffer = input.buffer.log10()
+    out = Tensor(out_buffer, device=input.device, _children=(input,), _op='log10')
+
+    def _backward() -> None:
+        if input.grad is None: input.grad = np.zeros(input.shape, dtype=np.float32)
+        # log10(x)' = 1/(x * ln(10))
+        ln_10 = np.log(10).item()
+        input.grad += unbroadcast((1 / (input.data * ln_10)) * out.grad, input.data.shape)
+    out._backward = _backward
+    return out
+
 def abs(input: Tensor) -> Tensor:
     out_buffer = abs(input.buffer)
     out = Tensor(out_buffer, device=input.device, _children=(input,), _op='abs')
