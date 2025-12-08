@@ -38,7 +38,7 @@ def log10(input: Tensor) -> Tensor:
     return out
 
 def abs(input: Tensor) -> Tensor:
-    out_buffer = abs(input.buffer)
+    out_buffer = input.buffer.__abs__()
     out = Tensor(out_buffer, device=input.device, _children=(input,), _op='abs')
 
     def _backward() -> None:
