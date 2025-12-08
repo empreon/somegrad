@@ -6,6 +6,8 @@ class Buffer:
     def __init__(self, data):
         self.data = data
 
+    def __getitem__(self, idx): raise NotImplementedError
+
     def __add__(self, other): raise NotImplementedError
     def __mul__(self, other): raise NotImplementedError
     def __matmul__(self, other): raise NotImplementedError

@@ -10,6 +10,9 @@ class CPUBuffer(Buffer):
             data = np.array(data)
         super().__init__(data)
 
+    def __getitem__(self, idx) -> 'CPUBuffer':
+        return CPUBuffer(self.data[idx])
+
     @property
     def shape(self) -> Tuple[int, ...]:
         return self.data.shape

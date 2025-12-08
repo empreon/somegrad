@@ -20,6 +20,10 @@ class Tensor:
         self._op = _op
         self._backward = lambda: None
 
+    def __getitem__(self, idx) -> 'Tensor':
+        from . import functional as F
+        return F.get_item(self, idx)
+
     def __hash__(self):
         return id(self)
 
@@ -78,6 +82,7 @@ class Tensor:
         return out
     
     def __pow__(self, other) -> 'Tensor':
+        assert isinstance(other, (int, float)), "only supporting int/float powers for now"
         other = other if isinstance(other, Tensor) else Tensor(other, device=self.device)
         out_buffer = self.buffer ** other.buffer
         out = Tensor(out_buffer, device=self.device, _children=(self, other), _op='**')
@@ -87,7 +92,7 @@ class Tensor:
             if other.grad is None: other.grad = np.zeros(other.shape, dtype=np.float32)
 
             self.grad += unbroadcast(out.grad * other.data * self.data ** (other.data - 1), self.shape)
-            other.grad += unbroadcast(out.grad * self.data * np.log(self.data), other.shape)
+            # other.grad += unbroadcast(out.grad * self.data * np.log(self.data), other.shape)
         out._backward = _backward
         return out
 

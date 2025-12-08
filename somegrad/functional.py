@@ -214,3 +214,17 @@ def histogram(input: Tensor, bins: Union[int, List[float], np.ndarray] = 10, ran
     hist = Tensor(hist_np, device=input.device)
     bin_edges = Tensor(bin_edges_np, device=input.device)
     return hist, bin_edges
+
+def get_item(input: Tensor, idx) -> Tensor:
+    out_buffer = input.buffer[idx]
+    out = Tensor(out_buffer, device=input.device, _children=(input,), _op='getitem')
+
+    def _backward() -> None:
+        if input.grad is None: input.grad = np.zeros(input.shape, dtype=np.float32)
+        
+        # We need to add gradient to the specific indices.
+        # np.add.at is used to handle potential duplicate indices correctly.
+        np.add.at(input.grad, idx, out.grad)
+
+    out._backward = _backward
+    return out
