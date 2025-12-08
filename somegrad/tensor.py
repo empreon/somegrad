@@ -20,6 +20,9 @@ class Tensor:
         self._op = _op
         self._backward = lambda: None
 
+    def __hash__(self):
+        return id(self)
+
     @property
     def data(self) -> np.ndarray:
         return self.buffer.data
@@ -108,6 +111,74 @@ class Tensor:
 
     def __rtruediv__(self, other) -> 'Tensor': 
         return other * self**-1
+
+    def __eq__(self, other) -> 'Tensor':
+        other = other if isinstance(other, Tensor) else Tensor(other, device=self.device)
+        return Tensor(self.buffer == other.buffer, device=self.device)
+
+    def __ne__(self, other) -> 'Tensor':
+        other = other if isinstance(other, Tensor) else Tensor(other, device=self.device)
+        return Tensor(self.buffer != other.buffer, device=self.device)
+
+    def __lt__(self, other) -> 'Tensor':
+        other = other if isinstance(other, Tensor) else Tensor(other, device=self.device)
+        return Tensor(self.buffer < other.buffer, device=self.device)
+
+    def __gt__(self, other) -> 'Tensor':
+        other = other if isinstance(other, Tensor) else Tensor(other, device=self.device)
+        return Tensor(self.buffer > other.buffer, device=self.device)
+
+    def __le__(self, other) -> 'Tensor':
+        other = other if isinstance(other, Tensor) else Tensor(other, device=self.device)
+        return Tensor(self.buffer <= other.buffer, device=self.device)
+
+    def __ge__(self, other) -> 'Tensor':
+        other = other if isinstance(other, Tensor) else Tensor(other, device=self.device)
+        return Tensor(self.buffer >= other.buffer, device=self.device)
+
+    def __abs__(self) -> 'Tensor':
+        from . import functional as F
+        return F.abs(self)
+
+    def exp(self) -> 'Tensor':
+        from . import functional as F
+        return F.exp(self)
+
+    def log(self) -> 'Tensor':
+        from . import functional as F
+        return F.log(self)
+
+    def log10(self) -> 'Tensor':
+        from . import functional as F
+        return F.log10(self)
+
+    def relu(self) -> 'Tensor':
+        from . import functional as F
+        return F.relu(self)
+
+    def tanh(self) -> 'Tensor':
+        from . import functional as F
+        return F.tanh(self)
+
+    def sum(self, axis=None, keepdims=False) -> 'Tensor':
+        from . import functional as F
+        return F.sum(self, axis=axis, keepdims=keepdims)
+
+    def mean(self, axis=None, keepdims=False) -> 'Tensor':
+        from . import functional as F
+        return F.mean(self, axis=axis, keepdims=keepdims)
+
+    def var(self, axis=None, keepdims=False) -> 'Tensor':
+        from . import functional as F
+        return F.var(self, axis=axis, keepdims=keepdims)
+
+    def std(self, axis=None, keepdims=False) -> 'Tensor':
+        from . import functional as F
+        return F.std(self, axis=axis, keepdims=keepdims)
+
+    def reshape(self, *shape) -> 'Tensor':
+        from . import functional as F
+        return F.reshape(self, *shape)
 
     def __repr__(self) -> str:
         return f"Tensor(data={self.data}, grad={self.grad})"
