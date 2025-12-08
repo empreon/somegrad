@@ -66,8 +66,8 @@ class BatchNorm1d(Module):
         
         # update the buffers
         if self.training:
-            self.running_mean = (1 - self.momentum) * self.running_mean + self.momentum * xmean
-            self.running_var = (1 - self.momentum) * self.running_var + self.momentum * xvar
+            self.running_mean.data = (1 - self.momentum) * self.running_mean.data + self.momentum * xmean.data
+            self.running_var.data = (1 - self.momentum) * self.running_var.data + self.momentum * xvar.data
         return self.out
 
     def parameters(self):
