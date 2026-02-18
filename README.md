@@ -14,7 +14,6 @@ graph TD;
     Tensor_API --> Computational_Graph;
     Tensor_API -- Dispatch --> Device_Backend;
     Device_Backend --> CPU_Buffer["CPU Buffer (NumPy)"];
-    Device_Backend -.-> GPU_Buffer["GPU Buffer (CUDA) - WIP"];
 ````
 
   * **`tensor.py`**: User-facing API that builds the DAG (Directed Acyclic Graph).
@@ -61,4 +60,3 @@ The project is evolving from a Python-only implementation to a high-performance 
   - [x] Core Autograd Engine (Topological Sort, DAG)
   - [x] NumPy Backend (CPU)
   - [x] NN Modules (Linear, BatchNorm, Activations)
-  - [ ] CUDA Backend: Implementing custom CUDA kernels for matrix operations.
