@@ -62,4 +62,3 @@ The project is evolving from a Python-only implementation to a high-performance 
   - [x] NumPy Backend (CPU)
   - [x] NN Modules (Linear, BatchNorm, Activations)
   - [ ] CUDA Backend: Implementing custom CUDA kernels for matrix operations.
-  - [ ] Lazy Evaluation: Moving from eager execution to graph compilation for kernel fusion optimization.
