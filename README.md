@@ -6,11 +6,7 @@
 
 Somegrad is a lightweight deep learning framework implemented from scratch to understand the internal mechanics of modern AI systems. It is inspired by Andrej Karpathy's **micrograd** and George Hotz's **tinygrad**.
 
-Unlike high-level wrappers, Somegrad focuses on the engine level: managing computational graphs, implementing backpropagation manually, and handling memory buffers across different devices.
-
 ## Architecture
-
-The framework is designed with a "Systems-First" approach:
 
 ```mermaid
 graph TD;
