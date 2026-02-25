@@ -1,10 +1,10 @@
 # Somegrad
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
-![Python](https://img.shields.io/badge/python-3.8%2B-blue)
+![Python](https://img.shields.io/badge/python-3.11%2B-blue)
 ![Status](https://img.shields.io/badge/status-active_development-green)
 
-Somegrad is a lightweight deep learning framework implemented from scratch to understand the internal mechanics of modern AI systems. It is inspired by Andrej Karpathy's **micrograd** and George Hotz's **tinygrad**.
+Somegrad is a lightweight deep learning framework implemented from scratch to understand the internal mechanics of modern AI systems. It is inspired by Andrej Karpathy's **micrograd**.
 
 ## Architecture
 
@@ -52,11 +52,3 @@ The `examples/` directory contains Jupyter notebooks demonstrating the capabilit
   * **02\_trigram\_language\_model.ipynb:** A character-level language model using a simple lookup table and cross-entropy loss.
   * **03\_mlp\_language\_model.ipynb:** A Multi-Layer Perceptron (MLP) based language model, introducing hidden layers and non-linearities.
   * **04\_mlp2\_language\_model.ipynb:** A deeper MLP implementation with Batch Normalization and more complex optimization dynamics.
-
-## Roadmap
-
-The project is evolving from a Python-only implementation to a high-performance system:
-
-  - [x] Core Autograd Engine (Topological Sort, DAG)
-  - [x] NumPy Backend (CPU)
-  - [x] NN Modules (Linear, BatchNorm, Activations)
