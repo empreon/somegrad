@@ -4,7 +4,7 @@
 ![Python](https://img.shields.io/badge/python-3.11%2B-blue)
 ![Status](https://img.shields.io/badge/status-active_development-green)
 
-Somegrad is a lightweight deep learning framework implemented from scratch to understand the internal mechanics of modern AI systems. It is inspired by Andrej Karpathy's **micrograd**.
+Somegrad is a lightweight deep learning framework designed to demonstrate the inner workings of tensor operations and backpropagation.. It is inspired by Andrej Karpathy's **micrograd**.
 
 ## Architecture
 
