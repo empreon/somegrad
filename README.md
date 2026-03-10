@@ -33,7 +33,7 @@ graph TD;
 Clone the repository and install the dependencies:
 
 ```bash
-git clone [https://github.com/username/somegrad.git](https://github.com/username/somegrad.git)
+git clone https://github.com/empreon/somegrad.git
 cd somegrad
 pip install -r requirements.txt
 ```
